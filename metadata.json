@@ -1,0 +1,6 @@
+{
+  "name": "One Page Quest - Générateur & Simulateur Solo",
+  "description": "Générateur de feuilles d'aventure uniques, fiches imprimables A4 haute fidélité et jeu de dés roguelike solo One Page Quest.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
