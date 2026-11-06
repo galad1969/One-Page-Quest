@@ -41,3 +41,16 @@
     background: transparent !important;
   }
 }
+
+@keyframes diceRoll {
+  0% { transform: rotate(0deg) scale(1) translateY(0); }
+  25% { transform: rotate(-18deg) scale(0.85) translateY(-6px); }
+  50% { transform: rotate(20deg) scale(1.15) translateY(4px); }
+  75% { transform: rotate(-12deg) scale(0.95) translateY(-3px); }
+  100% { transform: rotate(0deg) scale(1) translateY(0); }
+}
+
+.animate-dice-roll {
+  animation: diceRoll 0.45s ease-in-out;
+}
+

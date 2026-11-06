@@ -795,7 +795,9 @@ export const InteractivePlay: React.FC<InteractivePlayProps> = ({
                         isLocked
                           ? 'bg-amber-500/20 border-2 border-amber-400 text-amber-200 shadow-lg shadow-amber-500/10 -translate-y-1'
                           : 'bg-slate-800/90 border-2 border-slate-700 text-slate-200 hover:border-slate-500'
-                      } ${isInSelectedCombo ? 'ring-2 ring-emerald-500/50' : ''}`}
+                      } ${isInSelectedCombo ? 'ring-2 ring-emerald-500/50' : ''} ${
+                        isRolling && !isLocked ? 'animate-dice-roll' : ''
+                      }`}
                     >
                       <span className="font-mono text-3xl sm:text-4xl font-black">{value}</span>
                       <span className="text-[10px] font-semibold uppercase tracking-wider mt-0.5">
