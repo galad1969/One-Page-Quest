@@ -2,7 +2,7 @@ name: Deploy One Page Quest to GitHub Pages
 
 on:
   push:
-    branches: [ main ] # ou master
+    branches: [ main, master ]
 
 permissions:
   contents: read
@@ -29,7 +29,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm ci || npm install
 
       - name: Build static site
         run: npm run build
