@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { AdventureScenario, CombinationType } from '../types/game';
-import { Printer, RotateCcw, Palette, CheckCircle2 } from 'lucide-react';
+import { Printer, Download, RotateCcw, Palette, CheckCircle2, Loader2 } from 'lucide-react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface PrintableSheetProps {
   scenario: AdventureScenario;
@@ -11,6 +13,8 @@ export const PrintableSheet: React.FC<PrintableSheetProps> = ({ scenario, onRege
   const [printTheme, setPrintTheme] = useState<'bw' | 'parchment'>('bw');
   // Interactive ticking state so players can fill or mark on the sheet
   const [tickedBoxes, setTickedBoxes] = useState<Record<string, boolean>>({});
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const sheetRef = useRef<HTMLDivElement>(null);
 
   const toggleTick = (id: string) => {
     setTickedBoxes(prev => ({ ...prev, [id]: !prev[id] }));
@@ -18,6 +22,65 @@ export const PrintableSheet: React.FC<PrintableSheetProps> = ({ scenario, onRege
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!sheetRef.current || isExportingPdf) return;
+
+    try {
+      setIsExportingPdf(true);
+      const element = sheetRef.current;
+
+      // Capture element with html2canvas
+      const canvas = await html2canvas(element, {
+        scale: 2.5, // High resolution for crisp print/text
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: printTheme === 'bw' ? '#ffffff' : '#fcf8ed',
+        logging: false,
+        windowWidth: 1200
+      });
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+
+      // Create PDF in A4 Landscape (297mm x 210mm)
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pageWidth = 297;
+      const pageHeight = 210;
+      const margin = 4; // 4mm margin all around
+      const maxContentWidth = pageWidth - margin * 2; // 289mm
+      const maxContentHeight = pageHeight - margin * 2; // 202mm
+
+      // Compute aspect ratio fit
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(maxContentWidth / imgWidth, maxContentHeight / imgHeight);
+
+      const renderWidth = imgWidth * ratio;
+      const renderHeight = imgHeight * ratio;
+
+      // Center horizontally and vertically
+      const offsetX = margin + (maxContentWidth - renderWidth) / 2;
+      const offsetY = margin + (maxContentHeight - renderHeight) / 2;
+
+      pdf.addImage(imgData, 'JPEG', offsetX, offsetY, renderWidth, renderHeight);
+
+      // Save file with scenario seed and hero name
+      const safeHeroName = scenario.hero.name.toLowerCase().replace(/[^a-z0-9]/gi, '_');
+      const filename = `one_page_quest_${safeHeroName}_${scenario.seed}.pdf`;
+      pdf.save(filename);
+    } catch (error) {
+      console.error('Failed to export PDF:', error);
+      // Fallback to print dialog if canvas fails
+      window.print();
+    } finally {
+      setIsExportingPdf(false);
+    }
   };
 
   const isBw = printTheme === 'bw';
@@ -31,14 +94,19 @@ export const PrintableSheet: React.FC<PrintableSheetProps> = ({ scenario, onRege
             <Printer className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-base font-semibold font-cinzel text-amber-100">Feuille d'Aventure Imprimable A4</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-semibold font-cinzel text-amber-100">Feuille d'Aventure A4 Paysage</h2>
+              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                A4 Paysage (1 page)
+              </span>
+            </div>
             <p className="text-xs text-slate-400">
-              Format fidèle au PDF original de la campagne Kickstarter. Prêt pour impression directe ou jeu au stylo numérique.
+              Format optimisé A4 Paysage (297 × 210 mm). Téléchargez directement le fichier PDF ou lancez l'impression.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center flex-wrap gap-2">
           {/* Theme switcher */}
           <button
             onClick={() => setPrintTheme(prev => (prev === 'bw' ? 'parchment' : 'bw'))}
@@ -58,20 +126,42 @@ export const PrintableSheet: React.FC<PrintableSheetProps> = ({ scenario, onRege
             <span>Effacer les traits</span>
           </button>
 
+          {/* Direct PDF Download button */}
+          <button
+            onClick={handleDownloadPdf}
+            disabled={isExportingPdf}
+            className="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-lg shadow-emerald-600/25 active:scale-95 disabled:opacity-50 cursor-pointer"
+            title="Télécharger directement la feuille au format PDF (A4 Paysage)"
+          >
+            {isExportingPdf ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Génération du PDF...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4" />
+                <span>Télécharger en PDF (A4)</span>
+              </>
+            )}
+          </button>
+
           <button
             onClick={handlePrint}
-            className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 transition-colors shadow-lg shadow-amber-500/20"
+            className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 transition-colors"
+            title="Imprimer directement depuis votre navigateur"
           >
-            <Printer className="w-4 h-4" />
-            <span>Imprimer la Feuille A4 (PDF)</span>
+            <Printer className="w-4 h-4 text-amber-400" />
+            <span>Imprimer</span>
           </button>
         </div>
       </div>
 
-      {/* Sheet Container matching A4 dimensions */}
+      {/* Sheet Container matching A4 Landscape dimensions */}
       <div className="overflow-x-auto pb-6 flex justify-center">
         <div
-          className={`print-sheet-container w-[1000px] min-w-[1000px] border-2 border-black p-4 text-black select-none transition-colors duration-200 ${
+          ref={sheetRef}
+          className={`print-sheet-container w-[1120px] min-w-[1120px] max-w-[1120px] border-2 border-black p-3.5 text-black select-none transition-colors duration-200 shadow-2xl ${
             isBw ? 'bg-white' : 'bg-[#fcf8ed] border-[#3d2b1f]'
           }`}
           style={{ boxSizing: 'border-box' }}

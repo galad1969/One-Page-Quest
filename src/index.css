@@ -13,8 +13,8 @@
 
 @media print {
   @page {
-    size: A4 portrait;
-    margin: 5mm;
+    size: A4 landscape;
+    margin: 4mm;
   }
   body {
     background: #ffffff !important;
@@ -29,14 +29,16 @@
   }
   .print-sheet-container {
     display: block !important;
-    width: 210mm !important;
-    max-width: 210mm !important;
-    min-width: 210mm !important;
+    width: 289mm !important;
+    max-width: 289mm !important;
+    min-width: 289mm !important;
     margin: 0 auto !important;
-    padding: 4mm !important;
+    padding: 3mm !important;
     border: 2px solid black !important;
     box-shadow: none !important;
     background: #ffffff !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }
 
