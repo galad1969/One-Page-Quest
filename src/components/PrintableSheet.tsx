@@ -57,7 +57,7 @@ export const PrintableSheet: React.FC<PrintableSheetProps> = ({ scenario }) => {
       const maxW = pageWidth - margin * 2; // 289mm
       const maxH = pageHeight - margin * 2; // 202mm
 
-      // Compute aspect ratio fit
+      // Compute aspect ratio fit strictly to prevent 2nd page
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
       const ratio = Math.min(maxW / imgWidth, maxH / imgHeight);
@@ -97,11 +97,11 @@ export const PrintableSheet: React.FC<PrintableSheetProps> = ({ scenario }) => {
             <div className="flex items-center gap-2">
               <h2 className="text-base font-semibold font-cinzel text-amber-100">Feuille d'Aventure A4 Paysage</h2>
               <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                Format 1 Page Imprimable
+                1 Page Garantie (Marie-Agnès 4 colonnes)
               </span>
             </div>
             <p className="text-xs text-slate-400">
-              Format A4 Paysage optimisé. Tout le contenu (Boss, Bourse, Marchands) tient exactement sur 1 seule page sans coupure.
+              Format ultra-compact A4 Paysage. Marie-Agnès organisée sur 4 colonnes pour une hauteur minimale.
             </p>
           </div>
         </div>
@@ -166,7 +166,7 @@ export const PrintableSheet: React.FC<PrintableSheetProps> = ({ scenario }) => {
           }`}
           style={{ boxSizing: 'border-box' }}
         >
-          {/* 4 BALANCED COLUMNS LAYOUT FOR A4 LANDSCAPE */}
+          {/* MAIN GRID LAYOUT FOR A4 LANDSCAPE */}
           <div className="grid grid-cols-12 gap-2.5 items-start">
 
             {/* COLUMN 1 (Cols 1-3): Hero Card + Valeurs de Faces + Valeurs de Combinaisons */}
@@ -506,228 +506,238 @@ export const PrintableSheet: React.FC<PrintableSheetProps> = ({ scenario }) => {
               </div>
             </div>
 
-            {/* COLUMN 3 (Cols 7-9): ACTE 3 + BOURSE D'OR */}
-            <div className="col-span-3 space-y-2">
-              {/* ACTE 3 */}
-              <div className="border border-black p-1.5 bg-white">
-                <div className="bg-black text-white text-[8.5px] font-bold tracking-wider px-1.5 py-0.5 uppercase mb-1 flex justify-between">
-                  <span>Acte 3 : {scenario.act3.title}</span>
-                </div>
+            {/* RIGHT BLOCK (Cols 7-12): ACTE 3, BOURSE, SCRIBE, APOTHICAIRE & MARIE-AGNÈS EN 4 COLONNES */}
+            <div className="col-span-6 space-y-2">
 
-                <div className="space-y-1">
-                  {scenario.act3.sbires.map((sbire) => (
-                    <div key={sbire.id} className="border border-black p-1 text-[8px] bg-slate-50/50">
-                      <div className="flex items-center justify-between mb-0.5">
-                        <span className="font-bold">Sbire {sbire.index}</span>
-                        <div className="flex items-center gap-0.5">
-                          <span className="text-[6.5px] text-slate-600 uppercase font-semibold">Relances</span>
-                          {[1, 2, 3, 4, 5].map(r => {
-                            const id = `act3_s${sbire.index}_r${r}`;
-                            const checked = tickedBoxes[id];
+              {/* TOP PART OF RIGHT BLOCK: 2 Sub-columns (Cols 7-9 & Cols 10-12) */}
+              <div className="grid grid-cols-2 gap-2.5 items-start">
+
+                {/* Sub-col 1: Acte 3 + Bourse d'Or */}
+                <div className="space-y-2">
+                  {/* ACTE 3 */}
+                  <div className="border border-black p-1.5 bg-white">
+                    <div className="bg-black text-white text-[8.5px] font-bold tracking-wider px-1.5 py-0.5 uppercase mb-1 flex justify-between">
+                      <span>Acte 3 : {scenario.act3.title}</span>
+                    </div>
+
+                    <div className="space-y-1">
+                      {scenario.act3.sbires.map((sbire) => (
+                        <div key={sbire.id} className="border border-black p-1 text-[8px] bg-slate-50/50">
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="font-bold">Sbire {sbire.index}</span>
+                            <div className="flex items-center gap-0.5">
+                              <span className="text-[6.5px] text-slate-600 uppercase font-semibold">Relances</span>
+                              {[1, 2, 3, 4, 5].map(r => {
+                                const id = `act3_s${sbire.index}_r${r}`;
+                                const checked = tickedBoxes[id];
+                                return (
+                                  <button
+                                    key={id}
+                                    onClick={() => toggleTick(id)}
+                                    className={`w-2.5 h-2.5 border border-black flex items-center justify-center text-[7px] font-bold ${checked ? 'bg-black text-white' : 'bg-white'}`}
+                                  >
+                                    {checked ? '✕' : ''}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            <span className="font-mono font-bold text-[8.5px] bg-black text-white px-1 py-0.2 rounded-xs">
+                              {sbire.powerThreshold}+
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between text-[7.5px] border-t border-dotted border-black/40 pt-0.5">
+                            <div className="flex items-center gap-0.5 font-mono">
+                              <span className="w-4 h-3.5 border border-black text-center flex items-center justify-center text-[7px]">⚔️</span>
+                              <span>×</span>
+                              <span className="w-4 h-3.5 border border-black text-center flex items-center justify-center text-[7px]">🎯</span>
+                              <span>=</span>
+                              <span className="w-6 h-3.5 border border-black text-center flex items-center justify-center font-bold"></span>
+                            </div>
+                            <div className="text-[7.5px] text-right text-slate-800 italic" title={sbire.chest.effect}>
+                              🎁 {sbire.chest.effect}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Boss 3 */}
+                      <div className="border border-black p-1 text-[8px] bg-amber-500/10">
+                        <div className="flex items-center justify-between font-bold mb-0.5">
+                          <span className="text-[8.5px] uppercase font-cinzel text-red-950">👑 Boss 3 : {scenario.act3.boss.name}</span>
+                          <span className="font-mono text-[9px] bg-black text-white px-1 py-0.2 rounded-xs">
+                            {scenario.act3.boss.powerThreshold}+
+                          </span>
+                        </div>
+                        <div className="text-[7.5px] italic border-l-2 border-black pl-1 my-0.5 text-slate-900 leading-tight">
+                          <strong>Pouvoir : </strong>{scenario.act3.boss.powerRule}
+                        </div>
+                        <div className="flex items-center justify-between text-[7.5px] border-t border-dotted border-black/40 pt-0.5">
+                          <div className="flex items-center gap-0.5 font-mono">
+                            <span className="w-4 h-3.5 border border-black text-center flex items-center justify-center text-[7px]">⚔️</span>
+                            <span>×</span>
+                            <span className="w-4 h-3.5 border border-black text-center flex items-center justify-center text-[7px]">🎯</span>
+                            <span>=</span>
+                            <span className="w-6 h-3.5 border border-black text-center flex items-center justify-center font-bold"></span>
+                          </div>
+                          <span className="text-[7.5px] text-slate-800 font-medium">🏆 {scenario.act3.boss.chestEffect}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* MA BOURSE D'OR (100 coins in 4 blocks of 25) */}
+                  <div className="border border-black p-1.5 bg-white">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="bg-black text-white text-[8.5px] font-bold tracking-widest px-1.5 py-0.2 uppercase">
+                        Bourse d'Or (100)
+                      </span>
+                      <span className="text-[7.5px] text-slate-700 font-medium">● = Gagné · ○ = Libre</span>
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-1 pt-0.5">
+                      {[0, 1, 2, 3].map(block => (
+                        <div key={`gold-block-${block}`} className="grid grid-cols-5 gap-0.5 p-0.5 border border-black/30 rounded bg-slate-50/50">
+                          {Array.from({ length: 25 }).map((_, cIdx) => {
+                            const coinNumber = block * 25 + cIdx + 1;
+                            const id = `gold_coin_${coinNumber}`;
+                            const state = tickedBoxes[id];
                             return (
                               <button
                                 key={id}
                                 onClick={() => toggleTick(id)}
-                                className={`w-2.5 h-2.5 border border-black flex items-center justify-center text-[7px] font-bold ${checked ? 'bg-black text-white' : 'bg-white'}`}
+                                className={`w-2.5 h-2.5 rounded-full border border-black text-[6px] flex items-center justify-center font-bold leading-none transition-all ${
+                                  state ? 'bg-amber-400 text-black border-amber-600' : 'bg-white hover:bg-slate-200'
+                                }`}
+                                title={`Pièce #${coinNumber}`}
                               >
-                                {checked ? '✕' : ''}
+                                {state ? '●' : '○'}
                               </button>
                             );
                           })}
                         </div>
-                        <span className="font-mono font-bold text-[8.5px] bg-black text-white px-1 py-0.2 rounded-xs">
-                          {sbire.powerThreshold}+
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between text-[7.5px] border-t border-dotted border-black/40 pt-0.5">
-                        <div className="flex items-center gap-0.5 font-mono">
-                          <span className="w-4 h-3.5 border border-black text-center flex items-center justify-center text-[7px]">⚔️</span>
-                          <span>×</span>
-                          <span className="w-4 h-3.5 border border-black text-center flex items-center justify-center text-[7px]">🎯</span>
-                          <span>=</span>
-                          <span className="w-6 h-3.5 border border-black text-center flex items-center justify-center font-bold"></span>
-                        </div>
-                        <div className="text-[7.5px] text-right text-slate-800 italic" title={sbire.chest.effect}>
-                          🎁 {sbire.chest.effect}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* Boss 3 */}
-                  <div className="border border-black p-1 text-[8px] bg-amber-500/10">
-                    <div className="flex items-center justify-between font-bold mb-0.5">
-                      <span className="text-[8.5px] uppercase font-cinzel text-red-950">👑 Boss 3 : {scenario.act3.boss.name}</span>
-                      <span className="font-mono text-[9px] bg-black text-white px-1 py-0.2 rounded-xs">
-                        {scenario.act3.boss.powerThreshold}+
-                      </span>
-                    </div>
-                    <div className="text-[7.5px] italic border-l-2 border-black pl-1 my-0.5 text-slate-900 leading-tight">
-                      <strong>Pouvoir : </strong>{scenario.act3.boss.powerRule}
-                    </div>
-                    <div className="flex items-center justify-between text-[7.5px] border-t border-dotted border-black/40 pt-0.5">
-                      <div className="flex items-center gap-0.5 font-mono">
-                        <span className="w-4 h-3.5 border border-black text-center flex items-center justify-center text-[7px]">⚔️</span>
-                        <span>×</span>
-                        <span className="w-4 h-3.5 border border-black text-center flex items-center justify-center text-[7px]">🎯</span>
-                        <span>=</span>
-                        <span className="w-6 h-3.5 border border-black text-center flex items-center justify-center font-bold"></span>
-                      </div>
-                      <span className="text-[7.5px] text-slate-800 font-medium">🏆 {scenario.act3.boss.chestEffect}</span>
+                      ))}
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* MA BOURSE D'OR (100 coins in 4 blocks of 25) */}
-              <div className="border border-black p-1.5 bg-white">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="bg-black text-white text-[8.5px] font-bold tracking-widest px-1.5 py-0.2 uppercase">
-                    Bourse d'Or (100)
-                  </span>
-                  <span className="text-[7.5px] text-slate-700 font-medium">● = Gagné · ○ = Libre</span>
-                </div>
-
-                <div className="grid grid-cols-4 gap-1 pt-0.5">
-                  {[0, 1, 2, 3].map(block => (
-                    <div key={`gold-block-${block}`} className="grid grid-cols-5 gap-0.5 p-0.5 border border-black/30 rounded bg-slate-50/50">
-                      {Array.from({ length: 25 }).map((_, cIdx) => {
-                        const coinNumber = block * 25 + cIdx + 1;
-                        const id = `gold_coin_${coinNumber}`;
-                        const state = tickedBoxes[id];
-                        return (
-                          <button
-                            key={id}
-                            onClick={() => toggleTick(id)}
-                            className={`w-2.5 h-2.5 rounded-full border border-black text-[6px] flex items-center justify-center font-bold leading-none transition-all ${
-                              state ? 'bg-amber-400 text-black border-amber-600' : 'bg-white hover:bg-slate-200'
-                            }`}
-                            title={`Pièce #${coinNumber}`}
-                          >
-                            {state ? '●' : '○'}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* COLUMN 4 (Cols 10-12): MARCHANDS (Scribe, Apothicaire, Marie-Agnès) */}
-            <div className="col-span-3 space-y-2">
-
-              {/* SCRIBE SANS-VISAGE */}
-              <div className="border border-black p-1 bg-white">
-                <div className="flex items-center justify-between bg-black text-white px-1.5 py-0.2 mb-1">
-                  <span className="text-[8.5px] font-bold tracking-widest uppercase">Scribe Sans-Visage</span>
-                  <span className="text-[7px] text-amber-300">1 dé requis</span>
-                </div>
-                <div className="grid grid-cols-3 gap-1">
-                  {scenario.scribeItems.map((item) => (
-                    <div key={item.id} className="border border-black p-1 text-[7.5px] bg-slate-50 relative">
-                      <div className="flex items-center justify-between font-bold mb-0.5">
-                        <span className="w-3.5 h-3.5 border border-black rounded flex items-center justify-center bg-white font-mono text-[8px]">
-                          {item.dieRequired}
-                        </span>
-                        <span className="text-amber-900 font-mono font-extrabold">{item.cost} 🪙</span>
-                      </div>
-                      <div className="font-semibold text-[7.5px] leading-tight">{item.name}</div>
-                      <div className="text-[7px] text-slate-800 mt-0.5">
-                        F{item.targetFace} : <strong className="text-black">+{item.bonusValue} {item.bonusType === 'force' ? '⚔️' : item.bonusType === 'precision' ? '🎯' : '🪙'}</strong>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* APOTHICAIRE */}
-              <div className="border border-black p-1 bg-white">
-                <div className="flex items-center justify-between bg-black text-white px-1.5 py-0.2 mb-1">
-                  <span className="text-[8.5px] font-bold tracking-widest uppercase">Apothicaire</span>
-                  <span className="text-[7px] text-amber-300">1 dé requis</span>
-                </div>
-                <div className="grid grid-cols-3 gap-1">
-                  {scenario.apothecaryItems.map((item) => (
-                    <div key={item.id} className="border border-black p-1 text-[7.5px] bg-slate-50 relative">
-                      <div className="flex items-center justify-between font-bold mb-0.5">
-                        <span className="w-3.5 h-3.5 border border-black rounded flex items-center justify-center bg-white font-mono text-[8px]">
-                          {item.dieRequired}
-                        </span>
-                        <span className="text-amber-900 font-mono font-extrabold">{item.cost} 🪙</span>
-                      </div>
-                      <div className="font-semibold text-[7.5px] leading-tight">{item.name}</div>
-                      <div className="text-[7px] text-slate-800 capitalize mt-0.5">
-                        {item.targetCombo.replace('_', ' ')} :{' '}
-                        <strong className="text-black">
-                          {item.bonusType === 'force_and_precision'
-                            ? `+${item.bonusValue} ⚔️ & 🎯`
-                            : `+${item.bonusValue} ${item.bonusType === 'force' ? '⚔️' : item.bonusType === 'precision' ? '🎯' : '🪙'}`}
-                        </strong>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Fioles Spéciales Consommables */}
-                {scenario.specialPotions && scenario.specialPotions.length > 0 && (
-                  <div className="mt-1 pt-1 border-t border-dashed border-black/40">
-                    <div className="flex items-center justify-between text-[7.5px] font-bold uppercase mb-0.5">
-                      <span>🧪 Fioles Spéciales</span>
-                      <span className="text-slate-600 font-normal text-[6.5px]">Cocher si achetée</span>
+                {/* Sub-col 2: Scribe + Apothicaire & Fioles */}
+                <div className="space-y-2">
+                  {/* SCRIBE SANS-VISAGE */}
+                  <div className="border border-black p-1 bg-white">
+                    <div className="flex items-center justify-between bg-black text-white px-1.5 py-0.2 mb-1">
+                      <span className="text-[8.5px] font-bold tracking-widest uppercase">Scribe Sans-Visage</span>
+                      <span className="text-[7px] text-amber-300">1 dé requis</span>
                     </div>
                     <div className="grid grid-cols-3 gap-1">
-                      {scenario.specialPotions.map(potion => {
-                        const id = `special_pot_${potion.id}`;
-                        const isChecked = tickedBoxes[id];
-                        return (
-                          <div key={potion.id} className="border border-black p-0.5 text-[7px] bg-amber-50/40 relative">
-                            <div className="flex items-center justify-between font-bold">
-                              <span>{potion.name}</span>
-                              <span className="text-amber-900 font-mono">{potion.cost} 🪙</span>
-                            </div>
-                            <div className="text-[6.5px] text-slate-800 leading-tight my-0.5">
-                              {potion.effect}
-                            </div>
-                            <div className="flex justify-end">
-                              <button
-                                onClick={() => toggleTick(id)}
-                                className={`w-3 h-3 border border-black flex items-center justify-center text-[6.5px] font-bold ${isChecked ? 'bg-black text-white' : 'bg-white'}`}
-                              >
-                                {isChecked ? '✓' : ''}
-                              </button>
-                            </div>
+                      {scenario.scribeItems.map((item) => (
+                        <div key={item.id} className="border border-black p-1 text-[7.5px] bg-slate-50 relative">
+                          <div className="flex items-center justify-between font-bold mb-0.5">
+                            <span className="w-3.5 h-3.5 border border-black rounded flex items-center justify-center bg-white font-mono text-[8px]">
+                              {item.dieRequired}
+                            </span>
+                            <span className="text-amber-900 font-mono font-extrabold">{item.cost} 🪙</span>
                           </div>
-                        );
-                      })}
+                          <div className="font-semibold text-[7.5px] leading-tight">{item.name}</div>
+                          <div className="text-[7px] text-slate-800 mt-0.5">
+                            F{item.targetFace} : <strong className="text-black">+{item.bonusValue} {item.bonusType === 'force' ? '⚔️' : item.bonusType === 'precision' ? '🎯' : '🪙'}</strong>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                )}
+
+                  {/* APOTHICAIRE */}
+                  <div className="border border-black p-1 bg-white">
+                    <div className="flex items-center justify-between bg-black text-white px-1.5 py-0.2 mb-1">
+                      <span className="text-[8.5px] font-bold tracking-widest uppercase">Apothicaire</span>
+                      <span className="text-[7px] text-amber-300">1 dé requis</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1">
+                      {scenario.apothecaryItems.map((item) => (
+                        <div key={item.id} className="border border-black p-1 text-[7.5px] bg-slate-50 relative">
+                          <div className="flex items-center justify-between font-bold mb-0.5">
+                            <span className="w-3.5 h-3.5 border border-black rounded flex items-center justify-center bg-white font-mono text-[8px]">
+                              {item.dieRequired}
+                            </span>
+                            <span className="text-amber-900 font-mono font-extrabold">{item.cost} 🪙</span>
+                          </div>
+                          <div className="font-semibold text-[7.5px] leading-tight">{item.name}</div>
+                          <div className="text-[7px] text-slate-800 capitalize mt-0.5">
+                            {item.targetCombo.replace('_', ' ')} :{' '}
+                            <strong className="text-black">
+                              {item.bonusType === 'force_and_precision'
+                                ? `+${item.bonusValue} ⚔️ & 🎯`
+                                : `+${item.bonusValue} ${item.bonusType === 'force' ? '⚔️' : item.bonusType === 'precision' ? '🎯' : '🪙'}`}
+                            </strong>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Fioles Spéciales Consommables */}
+                    {scenario.specialPotions && scenario.specialPotions.length > 0 && (
+                      <div className="mt-1 pt-1 border-t border-dashed border-black/40">
+                        <div className="flex items-center justify-between text-[7.5px] font-bold uppercase mb-0.5">
+                          <span>🧪 Fioles Spéciales</span>
+                          <span className="text-slate-600 font-normal text-[6.5px]">Cocher si achetée</span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-1">
+                          {scenario.specialPotions.map(potion => {
+                            const id = `special_pot_${potion.id}`;
+                            const isChecked = tickedBoxes[id];
+                            return (
+                              <div key={potion.id} className="border border-black p-0.5 text-[7px] bg-amber-50/40 relative">
+                                <div className="flex items-center justify-between font-bold">
+                                  <span>{potion.name}</span>
+                                  <span className="text-amber-900 font-mono">{potion.cost} 🪙</span>
+                                </div>
+                                <div className="text-[6.5px] text-slate-800 leading-tight my-0.5">
+                                  {potion.effect}
+                                </div>
+                                <div className="flex justify-end">
+                                  <button
+                                    onClick={() => toggleTick(id)}
+                                    className={`w-3 h-3 border border-black flex items-center justify-center text-[6.5px] font-bold ${isChecked ? 'bg-black text-white' : 'bg-white'}`}
+                                  >
+                                    {isChecked ? '✓' : ''}
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
               </div>
 
-              {/* MARIE-AGNÈS, MARCHANDE ITINÉRANTE (11 Equipments for sums 2 to 12) */}
-              <div className="border border-black p-1 bg-white">
+              {/* MARIE-AGNÈS, MARCHANDE ITINÉRANTE DISPLAYED ACROSS 4 COLUMNS */}
+              <div className="border border-black p-1.5 bg-white">
                 <div className="flex items-center justify-between bg-black text-white px-1.5 py-0.2 mb-1">
-                  <span className="text-[8.5px] font-bold tracking-widest uppercase">Marie-Agnès</span>
-                  <span className="text-[7px] text-amber-300">Somme de 2 dés</span>
+                  <span className="text-[8.5px] font-bold tracking-widest uppercase">
+                    Marie-Agnès, la Marchande Itinérante
+                  </span>
+                  <span className="text-[7px] text-amber-300">Somme de 2 dés (2 à 12)</span>
                 </div>
-                <div className="grid grid-cols-2 gap-1">
+                <div className="grid grid-cols-4 gap-1.5">
                   {scenario.equipments.map((eq) => (
-                    <div key={eq.id} className="border border-black p-1 text-[7px] bg-slate-50/70 relative">
+                    <div key={eq.id} className="border border-black p-1 text-[7.5px] bg-slate-50/70 relative">
                       <div className="flex items-center justify-between font-bold mb-0.5">
-                        <div className="flex items-center gap-0.5">
-                          <span className="w-3.5 h-3 border border-black rounded bg-white flex items-center justify-center font-mono font-bold text-[7.5px]">
+                        <div className="flex items-center gap-1">
+                          <span className="w-3.5 h-3.5 border border-black rounded bg-white flex items-center justify-center font-mono font-bold text-[8px]">
                             {eq.requiredSum}
                           </span>
                           <span className="text-[7.5px]" title={eq.type}>
                             {eq.type === 'immediate' ? '⚡' : eq.type === 'combat' ? '⚔️' : eq.type === 'permanent' ? '♾️' : '🔼'}
                           </span>
                         </div>
-                        <span className="text-amber-900 font-mono font-bold text-[7.5px]">{eq.cost} 🪙</span>
+                        <span className="text-amber-900 font-mono font-bold text-[8px]">{eq.cost} 🪙</span>
                       </div>
-                      <div className="font-bold text-[7.5px] leading-tight">{eq.name}</div>
-                      <div className="text-[6.5px] leading-tight text-slate-800 mt-0.5">
+                      <div className="font-bold text-[8px] leading-tight">{eq.name}</div>
+                      <div className="text-[7px] leading-tight text-slate-800 mt-0.5">
                         {eq.effect}
                       </div>
                     </div>
