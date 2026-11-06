@@ -53,7 +53,7 @@ export default function App() {
       <div className="no-print border-b border-slate-800/80 bg-gradient-to-b from-slate-900 to-slate-950 relative overflow-hidden">
         <div className="absolute inset-0 opacity-15 pointer-events-none">
           <img
-            src="/src/assets/images/opq_hero_banner_1793969941633.jpg"
+            src="./assets/images/opq_hero_banner_1793969941633.jpg"
             alt="Tabletop solo RPG background"
             className="w-full h-full object-cover object-center"
           />

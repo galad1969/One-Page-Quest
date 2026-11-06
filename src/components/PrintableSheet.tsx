@@ -86,7 +86,7 @@ export const PrintableSheet: React.FC<PrintableSheetProps> = ({ scenario, onRege
                 <div className="flex items-center gap-2">
                   <div className="w-12 h-12 border border-black overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center font-cinzel font-bold text-lg">
                     <img
-                      src="/src/assets/images/opq_mercenary_art_1793969941470.jpg"
+                      src="./assets/images/opq_mercenary_art_1793969941470.jpg"
                       alt={scenario.hero.name}
                       className="w-full h-full object-cover"
                     />
@@ -599,7 +599,7 @@ export const PrintableSheet: React.FC<PrintableSheetProps> = ({ scenario, onRege
                               <span className="truncate">{potion.name}</span>
                               <span className="text-amber-900 font-mono">{potion.cost} 🪙</span>
                             </div>
-                            <div className="text-[6.5px] text-slate-700 leading-tight truncate" title={potion.effect}>
+                            <div className="text-[6.5px] text-slate-700 leading-tight" title={potion.effect}>
                               {potion.effect}
                             </div>
                             <div className="flex justify-end mt-0.5">

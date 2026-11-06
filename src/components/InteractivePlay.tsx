@@ -531,7 +531,7 @@ export const InteractivePlay: React.FC<InteractivePlayProps> = ({
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-lg overflow-hidden border-2 border-amber-500/40 bg-slate-950 shrink-0">
             <img
-              src="/src/assets/images/opq_mercenary_art_1793969941470.jpg"
+              src="./assets/images/opq_mercenary_art_1793969941470.jpg"
               alt={scenario.hero.name}
               className="w-full h-full object-cover"
             />
