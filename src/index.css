@@ -16,13 +16,16 @@
     size: A4 landscape;
     margin: 4mm;
   }
-  body {
+  html, body {
     background: #ffffff !important;
     color: #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     padding: 0 !important;
     margin: 0 !important;
+    width: 297mm !important;
+    height: 210mm !important;
+    overflow: hidden !important;
   }
   .no-print {
     display: none !important;
@@ -32,13 +35,16 @@
     width: 289mm !important;
     max-width: 289mm !important;
     min-width: 289mm !important;
+    max-height: 202mm !important;
     margin: 0 auto !important;
-    padding: 3mm !important;
+    padding: 2.5mm !important;
     border: 2px solid black !important;
     box-shadow: none !important;
     background: #ffffff !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+    page-break-after: avoid !important;
+    overflow: hidden !important;
   }
 }
 
